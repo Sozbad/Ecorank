@@ -1,13 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>React + TypeScript + Replit</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/index.jsx"></script>
-  </body>
-</html>
+import React, { useState } from "react";
+import './App.css';
+
+function App() {
+  const [search, setSearch] = useState("");
+  const [products] = useState([
+    { id: 1, name: "Eco-Friendly Bike Chain Lube", ecoScore: "Excellent" },
+    { id: 2, name: "Organic Shampoo", ecoScore: "Good" },
+    { id: 3, name: "Sustainable Cleaning Spray", ecoScore: "Poor" }
+  ]);
+
+  const filteredProducts = products.filter(product =>
+    product.name.toLowerCase().includes(search.toLowerCase())
+  );
+
+  return (
+    <div className="App">
+      <h1>EcoRank</h1>
+      <input
+        type="text"
+        placeholder="Search for eco-friendly products"
+        value={search}
+        onChange={e => setSearch(e.target.value)}
+      />
+      <div className="product-list">
+        {filteredProducts.map(product => (
+          <div key={product.id} className="product-card">
+            <h2>{product.name}</h2>
+            <p>Eco Score: {product.ecoScore}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default App;
