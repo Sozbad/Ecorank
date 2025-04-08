@@ -1,1 +1,1 @@
-Deploy with firebase
+Deploy
