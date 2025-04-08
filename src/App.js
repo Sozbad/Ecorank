@@ -1,1 +1,1 @@
-[YOUR CANVAS CODE INSERTED HERE]
+[placeholder for current canvas code — will be filled in next step]
