@@ -1,7 +1,10 @@
-"dependencies": {
-  "gh-pages": "^3.2.3"
-},
-"scripts": {
-  "predeploy": "npm run build",
-  "deploy": "gh-pages -d build"
+{
+  "homepage": "https://your-username.github.io/your-repo-name",
+  "dependencies": {
+    "gh-pages": "^3.2.3"
+  },
+  "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
+  }
 }
