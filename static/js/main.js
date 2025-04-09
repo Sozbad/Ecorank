@@ -1,1 +1,0 @@
-document.getElementById('root').innerHTML = `<h1>EcoRank is LIVE ✅</h1><p>This is the real app build rendering properly.</p>`;
