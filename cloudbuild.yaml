@@ -1,10 +1,10 @@
 steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: [
-      'build', '-t',
+      'build', '--no-cache', '-t',
       'gcr.io/$PROJECT_ID/github.com/sozbad/ecorank:$COMMIT_SHA',
       '-f', 'backend/Dockerfile',
-      '.'
+      'backend'
     ]
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
