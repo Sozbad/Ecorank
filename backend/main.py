@@ -1,9 +1,15 @@
-from fastapi import FastAPI, Request
-from gpt_agent_search import handle_search
+import openai
+import os
 
-app = FastAPI()
+openai.api_key = os.environ.get("OPENAI_API_KEY")
 
-@app.get("/search")
-async def search_handler(request: Request):
-    product = request.query_params.get("productName")
-    return handle_search(product)
+@app.get("/test-openai")
+def test_openai():
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages=[{"role": "user", "content": "Say hello"}]
+        )
+        return {"result": response.choices[0].message["content"]}
+    except Exception as e:
+        return {"error": str(e)}
