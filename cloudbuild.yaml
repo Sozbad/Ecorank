@@ -1,18 +1,18 @@
 steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: [
-      'build', '--no-cache', '-t',
-      'gcr.io/$PROJECT_ID/ecorank-api:latest',
+      'build', '-t',
+      'gcr.io/ecorank-15295/ecorank-api:latest',
       '-f', 'Dockerfile',
       '.'
     ]
-    dir: 'backend'   # ✅ this is critical
+    dir: 'backend'
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args: [
       'run', 'deploy', 'ecorank-api',
-      '--image', 'gcr.io/$PROJECT_ID/ecorank-api:latest',
+      '--image', 'gcr.io/ecorank-15295/ecorank-api:latest',
       '--region', 'europe-west2',
       '--platform', 'managed',
       '--allow-unauthenticated'
