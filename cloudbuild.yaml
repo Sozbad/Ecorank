@@ -3,9 +3,10 @@ steps:
     args: [
       'build', '--no-cache', '-t',
       'gcr.io/$PROJECT_ID/github.com/sozbad/ecorank:$COMMIT_SHA',
-      '-f', 'backend/Dockerfile',
+      '-f', 'Dockerfile',
       '.'
     ]
+    dir: 'backend'
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
