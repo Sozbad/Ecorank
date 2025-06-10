@@ -1,4 +1,15 @@
 steps:
+  # Step 0: Debug — show files in backend folder
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo "=== DEBUG: listing files in backend ==="
+        ls -lah
+    dir: 'backend'
+
+  # Step 1: Build Docker image from backend
   - name: 'gcr.io/cloud-builders/docker'
     args: [
       'build', '-t',
@@ -8,6 +19,7 @@ steps:
     ]
     dir: 'backend'
 
+  # Step 2: Deploy to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args: [
