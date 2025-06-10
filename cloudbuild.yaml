@@ -6,7 +6,7 @@ steps:
       '-f', 'Dockerfile',
       '.'
     ]
-    dir: 'backend'
+    dir: 'backend'   # ✅ this is critical
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
