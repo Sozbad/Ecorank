@@ -2,7 +2,7 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: [
       'build', '--no-cache', '-t',
-      'gcr.io/$PROJECT_ID/github.com/sozbad/ecorank:$COMMIT_SHA',
+      'gcr.io/$PROJECT_ID/ecorank-api:latest',
       '-f', 'Dockerfile',
       '.'
     ]
@@ -12,7 +12,7 @@ steps:
     entrypoint: gcloud
     args: [
       'run', 'deploy', 'ecorank-api',
-      '--image', 'gcr.io/$PROJECT_ID/github.com/sozbad/ecorank:$COMMIT_SHA',
+      '--image', 'gcr.io/$PROJECT_ID/ecorank-api:latest',
       '--region', 'europe-west2',
       '--platform', 'managed',
       '--allow-unauthenticated'
