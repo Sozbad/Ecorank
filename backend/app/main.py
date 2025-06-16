@@ -1,25 +1,17 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+import os
 import firebase_admin
 from firebase_admin import credentials, firestore
 import openai
-import os
-import uuid
+from datetime import datetime
+
+from utils.find_greener_swaps import find_greener_swaps
 from utils.image_and_description import fetch_image_and_description
-from gpt_agent_search import find_greener_swaps
 
-# Set OpenAI key
-openai.api_key = os.environ.get("OPENAI_API_KEY")
-
-# Init Firebase
-if not firebase_admin._apps:
-    cred = credentials.ApplicationDefault()
-    firebase_admin.initialize_app(cred)
-db = firestore.client()
-
-# Init FastAPI
 app = FastAPI()
 
+# Allow all CORS origins (safe for public API usage)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -28,48 +20,65 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Initialize Firebase Admin SDK using default service account (Cloud Run-compatible)
+firebase_admin.initialize_app()
+db = firestore.client()
+
+# Load OpenAI key
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to EcoRank API"}
+
 @app.get("/search")
-async def search_product(request: Request):
-    product_name = request.query_params.get("productName")
-    if not product_name:
-        return {"error": "Missing productName"}
+def search_product(productName: str):
+    if not productName:
+        return {"error": "No product name provided"}
 
-    # Check Firestore
-    product_ref = db.collection("products").document(product_name)
-    product_doc = product_ref.get()
-    if product_doc.exists:
-        return {"status": "exists", **product_doc.to_dict()}
+    product_ref = db.collection("products").document(productName.lower())
+    product = product_ref.get()
 
-    # GPT logic
+    if product.exists:
+        return {"status": "cached", "data": product.to_dict()}
+
+    # If not cached, fetch from GPT and scraping
     try:
-        swaps, sds_data = await find_greener_swaps(product_name)
-    except Exception as e:
-        swaps, sds_data = [], {"hazards": [], "disposal": "not found", "score": "not found"}
+        swaps, hazard_text, disposal_text, score = find_greener_swaps(productName)
+    except Exception:
+        swaps, hazard_text, disposal_text, score = [], "not found", "not found", "not found"
 
-    # Enrich with image + description
-    image, description = fetch_image_and_description(product_name)
+    try:
+        image_url, description = fetch_image_and_description(productName)
+    except Exception:
+        image_url, description = "not found", "not found"
 
-    # Build record
-    data = {
-        "name": product_name,
-        "hazards": sds_data.get("hazards", ["not found"]),
-        "disposal": sds_data.get("disposal", "not found"),
-        "score": sds_data.get("score", "not found"),
+    missing_fields = []
+    if hazard_text == "not found":
+        missing_fields.append("hazards")
+    if disposal_text == "not found":
+        missing_fields.append("disposal")
+    if image_url == "not found":
+        missing_fields.append("image")
+    if description == "not found":
+        missing_fields.append("description")
+
+    result = {
+        "name": productName,
+        "hazards": hazard_text,
+        "disposal": disposal_text,
+        "score": score,
         "swaps": swaps,
-        "image": image or "not found",
-        "description": description or "not found",
+        "image": image_url,
+        "description": description,
         "source": "GPT estimate",
         "sds_url": "",
-        "lastUpdated": firestore.SERVER_TIMESTAMP,
-        "missingFields": [
-            key for key in ["hazards", "disposal", "description", "image"]
-            if not sds_data.get(key) and not locals().get(key)
-        ],
+        "missingFields": missing_fields,
+        "timestamp": datetime.utcnow().isoformat()
     }
 
-    # Save to Firestore
-    product_ref.set(data)
-    return {"status": "done", **data}
+    product_ref.set(result)
+    return {"status": "done", "data": result}
 
 @app.get("/test-openai")
 def test_openai():
@@ -78,6 +87,6 @@ def test_openai():
             model="gpt-4",
             messages=[{"role": "user", "content": "Say hello"}]
         )
-        return {"result": response.choices[0].message["content"]}
+        return {"response": response.choices[0].message['content']}
     except Exception as e:
         return {"error": str(e)}
