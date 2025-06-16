@@ -11,4 +11,4 @@ COPY . .
 # Debug: list contents to confirm utils/ is inside the image
 RUN echo "--- /app contents ---" && ls -la /app && echo "--- /app/utils ---" && ls -la /app/utils
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
