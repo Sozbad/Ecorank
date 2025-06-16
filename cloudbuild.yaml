@@ -3,9 +3,9 @@ steps:
     args: [
       'build',
       '-t', 'gcr.io/ecorank-15295/ecorank-api:latest',
-      '-f', 'backend/Dockerfile',
       '.'
     ]
+    dir: backend
 
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/ecorank-15295/ecorank-api:latest']
