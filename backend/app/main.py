@@ -6,8 +6,8 @@ from firebase_admin import credentials, firestore
 import openai
 from datetime import datetime
 
-from utils.find_greener_swaps import find_greener_swaps
-from utils.image_and_description import fetch_image_and_description
+from app.utils.find_greener_swaps import find_greener_swaps
+from app.utils.image_and_description import fetch_image_and_description
 
 app = FastAPI()
 
