@@ -1,0 +1,24 @@
+# Ignore Python cache and local files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+
+# Ignore virtual environments
+env/
+venv/
+.venv/
+
+# Ignore logs and temporary files
+*.log
+*.tmp
+*.swp
+.DS_Store
+
+# Ignore git
+.git
+.gitignore
+
+# DO NOT exclude api/ — it's needed for the build
