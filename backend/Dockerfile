@@ -2,11 +2,10 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-COPY requirements.txt .
+COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY app app
-COPY app/utils/find_greener_swaps.py app/utils/find_greener_swaps.py  # <-- force it in
+COPY backend/app app
 
 ENV PYTHONPATH=/app
 
